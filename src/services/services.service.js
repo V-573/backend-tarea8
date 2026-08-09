@@ -22,30 +22,6 @@ export class ServicesService {
       },
       sort: null,
     };
-
-    // 1. Filtro por nombre
-    if (name) {
-      options.filters.name = name.replace(/['"]+/g, "").trim();
-    }
-
-    // 2. Filtro por categoría
-    if (category) {
-      options.filters.category = category
-        .replace(/['"]+/g, "")
-        .trim()
-        .toLowerCase();
-    }
-
-    // 3. Filtro por disponibilidad
-    if (available !== undefined) {
-      options.filters.available = available === "true";
-    }
-
-    // 4. Ordenamiento por precio (asc / desc)
-    if (sort) {
-      options.sort = sort.toLowerCase() === "desc" ? -1 : 1;
-    }
-
     return await this.repository.getServices(options);
   }
 

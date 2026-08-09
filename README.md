@@ -149,3 +149,151 @@ JSON
     "_id": "66b4d3a1e1234567890abc13"
   }
 }
+
+
+Documentación de la API de Servicios y Reservas
+Este documento detalla la configuración y el funcionamiento de la API, incluyendo ejemplos de uso para filtros, paginación, ordenamiento, esquemas de validación aplicados y cómo consultar reservas con la información completa de los servicios asociados.
+
+1. Ejemplos de Filtros, Paginación y Ordenamiento
+El endpoint principal para la consulta de servicios permite combinar parámetros en la Query String (GET /api/services) para filtrar los resultados de forma dinámica.
+
+Parámetros Aceptados
+Parámetro	Tipo	Descripción	Ejemplo
+name	String	Filtro por coincidencia parcial (insensible a mayúsculas/minúsculas).	?name=corte
+category	String	Filtro por categoría (coincidencia parcial).	?category=peluqueria
+available	Boolean	Filtro por disponibilidad (true o false).	?available=true
+page	Number	Número de página a consultar (por defecto 1).	?page=2
+limit	Number	Cantidad de registros por página (por defecto 10).	?limit=5
+sort	Number/String	Ordenamiento por precio: 1 / asc (ascendente) o -1 / desc (descendente).	?sort=1
+Ejemplo Completo de Solicitud (HTTP Request)
+HTTP
+GET /api/services?category=peluqueria&available=true&page=1&limit=5&sort=1 HTTP/1.1
+Host: api.tu-dominio.com
+Content-Type: application/json
+Respuesta de la API (JSON)
+JSON
+{
+  "success": true,
+  "message": "Todos los servicios",
+  "data": [
+    {
+      "_id": "60d5ecb9b3f1a21f8c8b4567",
+      "name": "Corte de Cabello Caballero",
+      "description": "Corte clásico o moderno con lavado incluido",
+      "duration": 30,
+      "price": 15.00,
+      "category": "Peluquería",
+      "available": true,
+      "createdAt": "2023-10-01T10:00:00.000Z",
+      "updatedAt": "2023-10-01T10:00:00.000Z"
+    },
+    {
+      "_id": "60d5ecb9b3f1a21f8c8b4568",
+      "name": "Corte y Peinado Dama",
+      "description": "Corte personalizado y peinado básico",
+      "duration": 60,
+      "price": 25.00,
+      "category": "Peluquería",
+      "available": true,
+      "createdAt": "2023-10-01T10:30:00.000Z",
+      "updatedAt": "2023-10-01T10:30:00.000Z"
+    }
+  ],
+  "pagination": {
+    "totalItems": 12,
+    "totalPages": 3,
+    "currentPage": 1,
+    "limit": 5
+  }
+}
+2. Validaciones Aplicadas
+Las validaciones de entrada se realizan con Zod mediante middleware previo a la llegada del controlador.
+
+Esquema de Validación de Reservas (createBookingSchema)
+Campo	Reglas y Tipo	Mensaje de Error / Comportamiento
+clientName	String Obligatorio. Mínimo 2 caracteres. Limpia espacios (trim).	"El nombre del cliente es obligatorio", "El nombre debe tener al menos 2 caracteres"
+clientEmail	String Obligatorio. Formato email válido. Limpia espacios y convierte a minúsculas.	"El email del cliente es obligatorio", "El formato del email no es válido"
+date	String Obligatorio. Formato regex YYYY-MM-DD.	"La fecha es obligatoria", "La fecha debe tener el formato YYYY-MM-DD"
+time	String Obligatorio. Formato 24 Horas HH:MM.	"La hora es obligatoria", "La hora debe tener un formato válido de 24h (HH:MM)"
+status	Enum: 'pending', 'confirmed', 'completed', 'cancelled'. Opcional.	"El estado enviado no es válido". Valor por defecto: 'pending'
+services	Array de Strings (IDs de servicios Mongoose). Opcional.	"Cada servicio debe ser un texto o ID válido". Valor por defecto: []
+3. Consulta de una Reserva con Servicios Completos (populate)
+Para retornar una reserva junto con la información detallada de los servicios en lugar de solo sus IDs de MongoDB, se utiliza la referencia en el esquema Mongoose (ref: 'Service') y la función .populate().
+
+Modelo de Mongoose Recomendado para Reservas (BookingModel)
+JavaScript
+import { Schema, model } from 'mongoose';
+
+const bookingSchema = new Schema({
+  clientName: { type: String, required: true },
+  clientEmail: { type: String, required: true },
+  date: { type: String, required: true },
+  time: { type: String, required: true },
+  status: { 
+    type: String, 
+    enum: ['pending', 'confirmed', 'completed', 'cancelled'], 
+    default: 'pending' 
+  },
+  // Referencia al modelo de Servicios para realizar Populate
+  services: [{ 
+    type: Schema.Types.ObjectId, 
+    ref: 'Service' 
+  }]
+}, {
+  timestamps: true
+});
+
+export const BookingModel = model('Booking', bookingSchema);
+Implementación en el DAO (BookingMongoDao.js)
+JavaScript
+import { BookingModel } from '../models/booking.models.js';
+
+export class BookingMongoDao {
+  // Consultar una reserva por ID poblando la lista completa de servicios
+  async getBookingById(id) {
+    const booking = await BookingModel.findById(id)
+      .populate('services') // Trae los documentos completos de la colección 'services'
+      .lean();
+
+    if (!booking) {
+      throw new Error(`La reserva con ID ${id} no existe.`);
+    }
+
+    return booking;
+  }
+}
+Ejemplo de Respuesta con Servicios Poblados
+JSON
+{
+  "success": true,
+  "data": {
+    "_id": "651a2b3c4d5e6f7a8b9c0d1e",
+    "clientName": "Juan Pérez",
+    "clientEmail": "juan.perez@example.com",
+    "date": "2026-09-15",
+    "time": "14:30",
+    "status": "confirmed",
+    "services": [
+      {
+        "_id": "60d5ecb9b3f1a21f8c8b4567",
+        "name": "Corte de Cabello Caballero",
+        "description": "Corte clásico o moderno con lavado incluido",
+        "duration": 30,
+        "price": 15.00,
+        "category": "Peluquería",
+        "available": true
+      },
+      {
+        "_id": "60d5ecb9b3f1a21f8c8b4599",
+        "name": "Arreglo de Barba",
+        "description": "Perfilado y perfilación con toalla caliente",
+        "duration": 20,
+        "price": 10.00,
+        "category": "Barbería",
+        "available": true
+      }
+    ],
+    "createdAt": "2026-08-09T12:00:00.000Z",
+    "updatedAt": "2026-08-09T12:00:00.000Z"
+  }
+}
