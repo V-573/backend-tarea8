@@ -56,6 +56,8 @@ export const getServiceById = async (req, res) => {
 // 3. Crear un nuevo servicio
 export const createService = async (req, res) => {
   try {
+// req.body ya pasó por Zod middleware y viene validado/saneado
+
     const nuevoServicio = await servicesService.addService(req.body);
 
     // Si nuevoServicio es un documento de Mongoose, conviértelo a objeto plano
@@ -72,6 +74,7 @@ const io = req.app.get("socketio");
 
     return res.status(201).json({ success: true, message: "Registro adicionado con éxito", data: servicioPlain });
   } catch (error) {
+    // Aquí solo llegarán errores de base de datos o lógica interna (ej. servicio duplicado)
     return res.status(400).json({ success: false, message: error.message || "Se deben enviar datos completos" });
   }
 };

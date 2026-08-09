@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { validateSchema } from "../middlewares/validate.meddleware.js";
+import { createBookingSchema } from "../validations/booking.validations.js";
 import {
   createBooking,
   getBookingById,
@@ -8,7 +10,7 @@ import {
 
 const router = Router();
 
-router.post("/", createBooking);
+router.post("/", validateSchema(createBookingSchema), createBooking);
 
 router.get("/:bid", getBookingById);
 router.get("/", getBooking);
