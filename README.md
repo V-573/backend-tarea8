@@ -165,13 +165,15 @@ Este documento detalla la configuración y el funcionamiento de la API, incluyen
 El endpoint principal para la consulta de servicios permite combinar parámetros en la Query String (GET /api/services) para filtrar los resultados de forma dinámica.
 
 Parámetros Aceptados
-Parámetro	Tipo	Descripción	Ejemplo
-name	String	Filtro por coincidencia parcial (insensible a mayúsculas/minúsculas).	?name=corte
-category	String	Filtro por categoría (coincidencia parcial).	?category=peluqueria
-available	Boolean	Filtro por disponibilidad (true o false).	?available=true
-page	Number	Número de página a consultar (por defecto 1).	?page=2
-limit	Number	Cantidad de registros por página (por defecto 10).	?limit=5
-sort	Number/String	Ordenamiento por precio: 1 / asc (ascendente) o -1 / desc (descendente).	?sort=1
+
+|Parámetro |	Tipo	| Descripción	| Ejemplo |
+| :--- | :--- | :--- | :--- |
+| name	| String |	Filtro por coincidencia parcial (insensible a mayúsculas/minúsculas). |	?name=corte |
+| category |	String	| Filtro por categoría (coincidencia parcial). |	?category=peluqueria |
+| available	| Boolean	| Filtro por disponibilidad (true o false).	| ?available=true |
+| page	| Number	| Número de página a consultar (por defecto 1).	| ?page=2 |
+| limit	| Number	| Cantidad de registros por página (por defecto 10).	| ?limit=5 | 
+| sort	| Number/String	| Ordenamiento por precio: 1 / asc (ascendente) o -1 / desc (descendente). |	?sort=1 |
 Ejemplo Completo de Solicitud (HTTP Request)
 HTTP
 GET /api/services?category=peluqueria&available=true&page=1&limit=5&sort=1 HTTP/1.1
@@ -217,13 +219,15 @@ JSON
 Las validaciones de entrada se realizan con Zod mediante middleware previo a la llegada del controlador.
 
 Esquema de Validación de Reservas (createBookingSchema)
-Campo	Reglas y Tipo	Mensaje de Error / Comportamiento
-clientName	String Obligatorio. Mínimo 2 caracteres. Limpia espacios (trim).	"El nombre del cliente es obligatorio", "El nombre debe tener al menos 2 caracteres"
-clientEmail	String Obligatorio. Formato email válido. Limpia espacios y convierte a minúsculas.	"El email del cliente es obligatorio", "El formato del email no es válido"
-date	String Obligatorio. Formato regex YYYY-MM-DD.	"La fecha es obligatoria", "La fecha debe tener el formato YYYY-MM-DD"
-time	String Obligatorio. Formato 24 Horas HH:MM.	"La hora es obligatoria", "La hora debe tener un formato válido de 24h (HH:MM)"
-status	Enum: 'pending', 'confirmed', 'completed', 'cancelled'. Opcional.	"El estado enviado no es válido". Valor por defecto: 'pending'
-services	Array de Strings (IDs de servicios Mongoose). Opcional.	"Cada servicio debe ser un texto o ID válido". Valor por defecto: []
+
+|Campo | Reglas y Tipo	| Mensaje de Error / Comportamiento |
+| :--- | :--- | :--- | :--- |
+| clientName |	String | Obligatorio. Mínimo 2 caracteres. Limpia espacios (trim).	| "El nombre del cliente es obligatorio", "El nombre debe tener al menos 2 caracteres" |
+| clientEmail |	String | Obligatorio. Formato email válido. Limpia espacios y convierte a minúsculas.	"El email del cliente es obligatorio", "El formato del email no es válido" |
+| date	| String | Obligatorio. Formato regex YYYY-MM-DD.	"La fecha es obligatoria", "La fecha debe tener el formato YYYY-MM-DD" |
+| time	| String | Obligatorio. Formato 24 Horas HH:MM.	"La hora es obligatoria", "La hora debe tener un formato válido de 24h (HH:MM)" |
+| status	| Enum: 'pending', 'confirmed', 'completed', 'cancelled'. Opcional.	| "El estado enviado no es válido". Valor por defecto: 'pending' |
+| services	| Array de Strings (IDs de servicios Mongoose). Opcional. |	"Cada servicio debe ser un texto o ID válido". Valor por defecto: [] |
 3. Consulta de una Reserva con Servicios Completos (populate)
 Para retornar una reserva junto con la información detallada de los servicios en lugar de solo sus IDs de MongoDB, se utiliza la referencia en el esquema Mongoose (ref: 'Service') y la función .populate().
 
