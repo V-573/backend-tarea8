@@ -2,10 +2,10 @@
 
 Este módulo permite la gestión completa (CRUD) de los servicios del sistema de turnos y reservas, incluyendo capacidades avanzadas de búsqueda, filtrado combinado, paginación y ordenamiento.
 
----
+
 
 ## Base URL
-```http
+http
 http://localhost:8080/api/services
 
 Endpoints
@@ -15,7 +15,15 @@ Método: GET
 URL: /api/services
 Query Parameters:
 
-ParámetroTipoDescripciónEjemplocategorystringFiltra por categoría (búsqueda parcial, insensible a mayúsculas).saludavailablebooleanFiltra por estado de disponibilidad (true o false).truenamestringBúsqueda por coincidencia en el nombre.masajepagenumberNúmero de página a consultar (por defecto: 1).1limitnumberCantidad de registros por página (por defecto: 10).5sortstringOrdena por precio (asc para ascendente, desc para descendente).asc
+| Parámetro | Tipo | Descripción | Ejemplo|
+| :--- | :--- | :--- | :--- |
+
+| `category` | `string` | Filtra por categoría (búsqueda parcial, insensible a mayúsculas). | `salud` |
+| `available` | `boolean` | Filtra por estado de disponibilidad (`true` o `false`). | `true` |
+| `name` | `string` | Búsqueda por coincidencia en el nombre. | `masaje` |
+| `page` | `number` | Número de página a consultar (por defecto: `1`). | `1` |
+| `limit` | `number` | Cantidad de registros por página (por defecto: `10`). | `5` |
+| `sort` | `string` | Ordena por precio (`asc` para ascendente, `desc` para descendente). | `asc` |
 
 ## Ejemplos de Petición
 
