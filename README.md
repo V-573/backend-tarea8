@@ -15,9 +15,8 @@ Método: GET
 URL: /api/services
 Query Parameters:
 
-| Parámetro | Tipo | Descripción | Ejemplo|
+| Parámetro | Tipo | Descripción | Ejemplo |
 | :--- | :--- | :--- | :--- |
-
 | `category` | `string` | Filtra por categoría (búsqueda parcial, insensible a mayúsculas). | `salud` |
 | `available` | `boolean` | Filtra por estado de disponibilidad (`true` o `false`). | `true` |
 | `name` | `string` | Búsqueda por coincidencia en el nombre. | `masaje` |
