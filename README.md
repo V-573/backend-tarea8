@@ -34,6 +34,9 @@ Combinación completa (Categoría + Disponibilidad + Paginación + Orden):
 GET /api/services?category=estetica&available=true&page=1&limit=5&sort=asc
 
 📥 Respuesta Exitosa (200 OK)
+
+```json
+
 JSON
 {
   "success": true,
@@ -58,11 +61,15 @@ JSON
     "limit": 5
   }
 }
+```
 
 ## 2. Obtener Servicio por ID
 Retorna la información detallada de un servicio específico mediante su ID único de MongoDB (_id).Método: GETURL: /api/services/:id
 
 📥 Respuesta Exitosa (200 OK)
+
+```json
+
 JSON
 {
   "success": true,
@@ -84,6 +91,7 @@ JSON
   "message": "El servicio con ID 66b4d2f8e1234567890abc12 no existe."
 }
 
+``` 
 
 ## 3. Crear un Nuevo Servicio
 Registra un nuevo servicio en el sistema y emite un evento en tiempo real vía WebSockets (servicio_creado).
@@ -92,6 +100,9 @@ URL: /api/services
 Headers: Content-Type: application/json
 
 📤 Cuerpo de la Petición (Request Body)
+
+```json
+
 JSON
 {
   "name": "Corte de Cabello Profesional",
@@ -119,6 +130,7 @@ JSON
     "updatedAt": "2026-08-07T21:00:00.000Z"
   }
 }
+```
 
 ## 4. Actualizar un Servicio
 Actualiza los datos de un servicio existente. Emite un evento en tiempo real vía WebSockets (servicio_actualizado).
@@ -126,6 +138,9 @@ Método: PUT
 URL: /api/services/:id
 Headers: Content-Type: application/json
 📤 Cuerpo de la Petición (Request Body)
+
+```json
+
 JSON
 {
   "price": 40000,
@@ -143,12 +158,18 @@ JSON
     "available": false
   }
 }
+
+```
+
 ## 5. Eliminar un Servicio
 Remueve un servicio de la base de datos por su ID. Emite un evento en tiempo real vía WebSockets (servicio_eliminado).
 
 Método: DELETE
 URL: /api/services/:id
 📥 Respuesta Exitosa (200 OK)
+
+```json
+
 JSON
 {
   "success": true,
@@ -158,6 +179,7 @@ JSON
   }
 }
 
+```
 
 Documentación de la API de Servicios y Reservas
 Este documento detalla la configuración y el funcionamiento de la API, incluyendo ejemplos de uso para filtros, paginación, ordenamiento, esquemas de validación aplicados y cómo consultar reservas con la información completa de los servicios asociados.
@@ -184,6 +206,9 @@ GET /api/services?category=peluqueria&available=true&page=1&limit=5&sort=1 HTTP/
 Host: api.tu-dominio.com
 Content-Type: application/json
 Respuesta de la API (JSON)
+
+```json
+
 JSON
 
 {
@@ -221,6 +246,8 @@ JSON
   }
 }
 
+```
+
 2. Validaciones Aplicadas
 Las validaciones de entrada se realizan con Zod mediante middleware previo a la llegada del controlador.
 
@@ -229,11 +256,11 @@ Esquema de Validación de Reservas (createBookingSchema)
 | Campo | Reglas y Tipo	| Mensaje de Error | Comportamiento |
 | :--- | :--- | :--- | :--- |
 | clientName |	String | Obligatorio. Mínimo 2 caracteres. Limpia espacios (trim).	| "El nombre del cliente es obligatorio", "El nombre debe tener al menos 2 caracteres" |
-| clientEmail |	String | Obligatorio. Formato email válido. Limpia espacios y convierte a minúsculas.	"El email del cliente es obligatorio", "El formato del email no es válido" |
-| date	| String | Obligatorio. Formato regex YYYY-MM-DD.	"La fecha es obligatoria", "La fecha debe tener el formato YYYY-MM-DD" |
-| time	| String | Obligatorio. Formato 24 Horas HH:MM.	"La hora es obligatoria", "La hora debe tener un formato válido de 24h (HH:MM)" |
-| status	| Enum: 'pending', 'confirmed', 'completed', 'cancelled'. Opcional.	| "El estado enviado no es válido". Valor por defecto: 'pending' |
-| services	| Array de Strings (IDs de servicios Mongoose). Opcional. |	"Cada servicio debe ser un texto o ID válido". Valor por defecto: [] |
+| clientEmail |	String | Obligatorio. Formato email válido. Limpia espacios y convierte a minúsculas.	| "El email del cliente es obligatorio", "El formato del email no es válido" |
+| date	| String | Obligatorio. Formato regex YYYY-MM-DD.	" | La fecha es obligatoria", "La fecha debe tener el formato YYYY-MM-DD" |
+| time	| String | Obligatorio. Formato 24 Horas HH:MM.	| "La hora es obligatoria", "La hora debe tener un formato válido de 24h (HH:MM)" |
+| status	| Enum: 'pending', 'confirmed', 'completed', 'cancelled'. Opcional.	| "El estado enviado no es válido".  | Valor por defecto: 'pending' |
+| services	| Array de Strings (IDs de servicios Mongoose). Opcional. |	"Cada servicio debe ser un texto o ID válido". |  Valor por defecto: [] |
 
 
 3. Consulta de una Reserva con Servicios Completos (populate)
@@ -241,6 +268,9 @@ Para retornar una reserva junto con la información detallada de los servicios e
 
 Modelo de Mongoose Recomendado para Reservas (BookingModel)
 JavaScript
+
+```js 
+
 import { Schema, model } from 'mongoose';
 
 const bookingSchema = new Schema({
@@ -281,7 +311,13 @@ export class BookingMongoDao {
     return booking;
   }
 }
+```
+
+
 Ejemplo de Respuesta con Servicios Poblados
+
+```json
+
 JSON
 {
   "success": true,
@@ -316,3 +352,5 @@ JSON
     "updatedAt": "2026-08-09T12:00:00.000Z"
   }
 }
+
+```
