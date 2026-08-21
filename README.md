@@ -26,6 +26,7 @@ Query Parameters:
 
 ## Ejemplos de Petición
 
+
 Obtener todos (paginación por defecto):GET /api/services
 
 Filtrar por categoría:GET /api/services?category=salud
